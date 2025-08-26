@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordCounter Pro | Advanced Text Analysis Tool</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Reset and Variables */
+        :root {
+            --primary: #4a6cf7;
+            --primary-dark: #3a56d4;
+            --secondary: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --body-bg: #f5f8ff;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-radius: 12px;
+            --box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--body-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Header and Navigation */
+        header {
+            background-color: var(--card-bg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .logo i {
+            margin-right: 10px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-menu li {
+            margin-left: 25px;
+        }
+
+        .nav-menu a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .nav-menu a:hover {
+            color: var(--primary);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 40px 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--secondary);
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+
+        /* Main Content Layout */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        /* Editor and Stats Panels */
+        .panel {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            transition: var(--transition);
+        }
+
+        .panel:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+
+        .panel-title i {
+            margin-right: 10px;
+        }
+
+        /* Text Editor */
+        .text-editor {
+            grid-column: 1 / 2;
+        }
+
+        #text-input {
+            width: 100%;
+            min-height: 350px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            font-family: inherit;
+            font-size: 1rem;
+            line-height: 1.6;
+            resize: vertical;
+            transition: var(--transition);
+        }
+
+        #text-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.15);
+        }
+
+        .editor-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 18px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--dark);
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        /* Stats Panel */
+        .stats-panel {
+            grid-column: 2 / 3;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f6f9ff 0%, #edf2ff 100%);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--secondary);
+        }
+
+        /* Additional Stats */
+        .additional-stats {
+            margin-top: 25px;
+        }
+
+        .time-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        /* Keyword Density */
+        .keyword-density {
+            margin-top: 25px;
+        }
+
+        .keyword-list {
+            margin-top: 15px;
+        }
+
+        .keyword-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .keyword {
+            font-weight: 500;
+        }
+
+        .density {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Tools Panel */
+        .tools-panel {
+            grid-column: 1 / -1;
+            margin-top: 20px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .tool-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-color: var(--card-bg);
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tool-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: var(--box-shadow);
+        }
+
+        .tool-icon {
+            font-size: 1.75rem;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .tool-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--card-bg);
+            padding: 30px 0;
+            margin-top: 40px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+            color: var(--secondary);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-links a {
+            color: var(--secondary);
+            font-size: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .social-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .text-editor, .stats-panel {
+                grid-column: 1 / -1;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: var(--card-bg);
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            }
+            
+            .nav-menu.active {
+                display: flex;
+            }
+            
+            .nav-menu li {
+                margin: 10px 0;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .stats-grid, .time-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 1.75rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .editor-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Navigation -->
+    <header>
+        <div class="container">
+            <div class="nav-container">
+                <a href="#" class="logo">
+                    <i class="fas fa-font"></i>
+                    WordCounter Pro
+                </a>
+                
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <ul class="nav-menu">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Features</a></li>
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Advanced Word Counter Tool</h1>
+            <p>Analyze your text in real-time with our professional word counter tool. Get detailed statistics, keyword density, reading time, and more.</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+        <div class="main-content">
+            <!-- Text Editor Panel -->
+            <div class="panel text-editor">
+                <h2 class="panel-title">
+                    <i class="fas fa-edit"></i>
+                    Type or Paste Your Text
+                </h2>
+                <textarea id="text-input" placeholder="Start typing or paste your text here..."></textarea>
+                
+                <div class="editor-actions">
+                    <button class="btn btn-secondary" id="clear-btn">
+                        <i class="fas fa-broom"></i>
+                        Clear Text
+                    </button>
+                    <button class="btn" id="copy-btn">
+                        <i class="fas fa-copy"></i>
+                        Copy Text
+                    </button>
+                    <button class="btn btn-success" id="download-btn">
+                        <i class="fas fa-download"></i>
+                        Download Text
+                    </button>
+                    <button class="btn btn-warning" id="print-btn">
+                        <i class="fas fa-print"></i>
+                        Print Text
+                    </button>
+                </div>
+            </div>
+
+            <!-- Statistics Panel -->
+            <div class="panel stats-panel">
+                <h2 class="panel-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Text Statistics
+                </h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="word-count">0</div>
+                        <div class="stat-label">Words</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="char-count">0</div>
+                        <div class="stat-label">Characters</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="char-no-spaces">0</div>
+                        <div class="stat-label">Characters (no spaces)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="sentence-count">0</div>
+                        <div class="stat-label">Sentences</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="paragraph-count">0</div>
+                        <div class="stat-label">Paragraphs</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avg-word-length">0</div>
+                        <div class="stat-label">Avg. Word Length</div>
+                    </div>
+                </div>
+                
+                <div class="additional-stats">
+                    <h3 class="panel-title">
+                        <i class="fas fa-clock"></i>
+                        Time Estimates
+                    </h3>
+                    
+                    <div class="time-stats">
+                        <div class="stat-card">
+                            <div class="stat-value" id="reading-time">0</div>
+                            <div class="stat-label">Reading Time (275 wpm)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="speaking-time">0</div>
+                            <div class="stat-label">Speaking Time (180 wpm)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="keyword-density">
+                    <h3 class="panel-title">
+                        <i class="fas fa-key"></i>
+                        Keyword Density
+                    </h3>
+                    
+                    <div class="keyword-list" id="keyword-list">
+                        <p>Start typing to see keyword density analysis...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tools Panel -->
+            <div class="panel tools-panel">
+                <h2 class="panel-title">
+                    <i class="fas fa-tools"></i>
+                    Text Tools
+                </h2>
+                
+                <div class="tools-grid">
+                    <div class="tool-btn" id="sentence-case-btn">
+                        <div class="tool-icon">
+                            <i class="fas fa-text-height"></i>
+                        </div>
+                        <div class="tool-name">Sentence Case</div>
+                    </div>
+                    
+                    <div class="tool-btn" id="title-case-btn">
+                        <div class="tool-icon">
+                            <i class="fas fa-heading"></i>
+                        </div>
+                        <div class="tool-name">Title Case</div>
+                    </div>
+                    
+                    <div class="tool-btn" id="uppercase-btn">
+                        <div class="tool-icon">
+                            <i class="fas fa-font"></i>
+                        </div>
+                        <div class="tool-name">UPPERCASE</div>
+                    </div>
+                    
+                    <div class="tool-btn" id="lowercase-btn">
+                        <div class="tool-icon">
+                            <i class="fas fa-font"></i>
+                        </div>
+                        <div class="tool-name">lowercase</div>
+                    </div>
+                    
+                    <div class="tool-btn" id="undo-btn">
+                        <div class="tool-icon">
+                            <i class="fas fa-undo"></i>
+                        </div>
+                        <div class="tool-name">Undo</div>
+                    </div>
+                    
+                    <div class="tool-btn" id="redo-btn">
+                        <div class="tool-icon">
+                            <i class="fas fa-redo"></i>
+                        </div>
+                        <div class="tool-name">Redo</div>
+                    </div>
+                    
+                    <div class="tool-btn" id="grammar-btn">
+                        <div class="tool-icon">
+                            <i class="fas fa-spell-check"></i>
+                        </div>
+                        <div class="tool-name">Grammar Check</div>
+                    </div>
+                    
+                    <div class="tool-btn" id="typing-speed-btn">
+                        <div class="tool-icon">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <div class="tool-name">Typing Speed Test</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="copyright">
+                    &copy; 2023 WordCounter Pro. All rights reserved.
+                </div>
+                
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const textInput = document.getElementById('text-input');
+        const wordCount = document.getElementById('word-count');
+        const charCount = document.getElementById('char-count');
+        const charNoSpaces = document.getElementById('char-no-spaces');
+        const sentenceCount = document.getElementById('sentence-count');
+        const paragraphCount = document.getElementById('paragraph-count');
+        const avgWordLength = document.getElementById('avg-word-length');
+        const readingTime = document.getElementById('reading-time');
+        const speakingTime = document.getElementById('speaking-time');
+        const keywordList = document.getElementById('keyword-list');
+        
+        // Buttons
+        const clearBtn = document.getElementById('clear-btn');
+        const copyBtn = document.getElementById('copy-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const printBtn = document.getElementById('print-btn');
+        const sentenceCaseBtn = document.getElementById('sentence-case-btn');
+        const titleCaseBtn = document.getElementById('title-case-btn');
+        const uppercaseBtn = document.getElementById('uppercase-btn');
+        const lowercaseBtn = document.getElementById('lowercase-btn');
+        const undoBtn = document.getElementById('undo-btn');
+        const redoBtn = document.getElementById('redo-btn');
+        const grammarBtn = document.getElementById('grammar-btn');
+        const typingSpeedBtn = document.getElementById('typing-speed-btn');
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navMenu = document.querySelector('.nav-menu');
+        
+        // History for undo/redo
+        let textHistory = [''];
+        let historyPosition = 0;
+        
+        // Initialize
+        textInput.focus();
+        
+        // Event Listeners
+        textInput.addEventListener('input', updateStats);
+        clearBtn.addEventListener('click', clearText);
+        copyBtn.addEventListener('click', copyText);
+        downloadBtn.addEventListener('click', downloadText);
+        printBtn.addEventListener('click', printText);
+        sentenceCaseBtn.addEventListener('click', convertToSentenceCase);
+        titleCaseBtn.addEventListener('click', convertToTitleCase);
+        uppercaseBtn.addEventListener('click', convertToUppercase);
+        lowercaseBtn.addEventListener('click', convertToLowercase);
+        undoBtn.addEventListener('click', undoText);
+        redoBtn.addEventListener('click', redoText);
+        grammarBtn.addEventListener('click', showGrammarDemo);
+        typingSpeedBtn.addEventListener('click', showTypingSpeedDemo);
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        
+        // Save text to history on input
+        textInput.addEventListener('input', () => {
+            // Only save if text is different from last history item
+            if (textInput.value !== textHistory[historyPosition]) {
+                // Remove future history if we're not at the end
+                if (historyPosition < textHistory.length - 1) {
+                    textHistory = textHistory.slice(0, historyPosition + 1);
+                }
+                
+                textHistory.push(textInput.value);
+                historyPosition++;
+            }
+        });
+        
+        // Functions
+        function updateStats() {
+            const text = textInput.value;
+            
+            // Word count
+            const words = text.match(/\b\w+\b/g) || [];
+            wordCount.textContent = words.length;
+            
+            // Character counts
+            charCount.textContent = text.length;
+            charNoSpaces.textContent = text.replace(/\s+/g, '').length;
+            
+            // Sentence count
+            const sentences = text.split(/[.!?]+/).filter(s => s.length > 0);
+            sentenceCount.textContent = sentences.length;
+            
+            // Paragraph count
+            const paragraphs = text.split(/\n\s*\n/).filter(p => p.length > 0);
+            paragraphCount.textContent = paragraphs.length || (text.length > 0 ? 1 : 0);
+            
+            // Average word length
+            const totalWordLength = words.reduce((total, word) => total + word.length, 0);
+            avgWordLength.textContent = words.length ? (totalWordLength / words.length).toFixed(1) : '0';
+            
+            // Reading and speaking time
+            const readingTimeMin = Math.ceil(words.length / 275);
+            const speakingTimeMin = Math.ceil(words.length / 180);
+            readingTime.textContent = readingTimeMin + ' min';
+            speakingTime.textContent = speakingTimeMin + ' min';
+            
+            // Keyword density
+            calculateKeywordDensity(words);
+        }
+        
+        function calculateKeywordDensity(words) {
+            // Count word frequencies
+            const wordCounts = {};
+            words.forEach(word => {
+                const cleanWord = word.toLowerCase().replace(/[^\w]/g, '');
+                if (cleanWord.length > 3) { // Only consider words longer than 3 characters
+                    wordCounts[cleanWord] = (wordCounts[cleanWord] || 0) + 1;
+                }
+            });
+            
+            // Convert to array and sort by frequency
+            const sortedWords = Object.entries(wordCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10); // Top 10 words
+            
+            // Calculate density percentages
+            const totalWords = words.length;
+            
+            // Update UI
+            if (sortedWords.length > 0) {
+                keywordList.innerHTML = '';
+                sortedWords.forEach(([word, count]) => {
+                    const density = ((count / totalWords) * 100).toFixed(2);
+                    
+                    const keywordItem = document.createElement('div');
+                    keywordItem.className = 'keyword-item';
+                    keywordItem.innerHTML = `
+                        <span class="keyword">${word}</span>
+                        <span class="density">${count} (${density}%)</span>
+                    `;
+                    
+                    keywordList.appendChild(keywordItem);
+                });
+            } else {
+                keywordList.innerHTML = '<p>No keywords available. Add more content to see keyword density.</p>';
+            }
+        }
+        
+        function clearText() {
+            textInput.value = '';
+            updateStats();
+        }
+        
+        function copyText() {
+            textInput.select();
+            document.execCommand('copy');
+            
+            // Show feedback
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            
+            setTimeout(() => {
+                copyBtn.innerHTML = originalText;
+            }, 2000);
+        }
+        
+        function downloadText() {
+            const text = textInput.value;
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'document.txt';
+            a.click();
+            
+            URL.revokeObjectURL(url);
+        }
+        
+        function printText() {
+            const printContent = textInput.value;
+            const printWindow = window.open('', '_blank');
+            
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Print Text</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+                        </style>
+                    </head>
+                    <body>
+                        <pre>${printContent}</pre>
+                    </body>
+                </html>
+            `);
+            
+            printWindow.document.close();
+            printWindow.print();
+        }
+        
+        function convertToSentenceCase() {
+            const text = textInput.value;
+            if (!text) return;
+            
+            const sentences = text.toLowerCase().split(/([.!?]\s+)/);
+            let result = '';
+            
+            for (let i = 0; i < sentences.length; i++) {
+                if (i % 2 === 0) { // Sentence content
+                    result += sentences[i].charAt(0).toUpperCase() + sentences[i].slice(1);
+                } else { // Punctuation and space
+                    result += sentences[i];
+                }
+            }
+            
+            textInput.value = result;
+            updateStats();
+        }
+        
+        function convertToTitleCase() {
+            const text = textInput.value;
+            if (!text) return;
+            
+            const smallWords = /^(a|an|and|as|at|but|by|en|for|if|in|of|on|or|the|to|v\.?|via|vs\.?)$/i;
+            const words = text.split(/\s+/);
+            
+            const titleCase = words.map((word, index) => {
+                // Always capitalize first and last word
+                if (index === 0 || index === words.length - 1) {
+                    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                }
+                
+                // Don't capitalize small words
+                if (word.match(smallWords)) {
+                    return word.toLowerCase();
+                }
+                
+                // Capitalize other words
+                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+            }).join(' ');
+            
+            textInput.value = titleCase;
+            updateStats();
+        }
+        
+        function convertToUppercase() {
+            textInput.value = textInput.value.toUpperCase();
+            updateStats();
+        }
+        
+        function convertToLowercase() {
+            textInput.value = textInput.value.toLowerCase();
+            updateStats();
+        }
+        
+        function undoText() {
+            if (historyPosition > 0) {
+                historyPosition--;
+                textInput.value = textHistory[historyPosition];
+                updateStats();
+            }
+        }
+        
+        function redoText() {
+            if (historyPosition < textHistory.length - 1) {
+                historyPosition++;
+                textInput.value = textHistory[historyPosition];
+                updateStats();
+            }
+        }
+        
+        function showGrammarDemo() {
+            alert('Grammar check feature would be implemented in a production version. This is a demo.');
+        }
+        
+        function showTypingSpeedDemo() {
+            alert('Typing speed test would be implemented in a production version. This is a demo.');
+        }
+        
+        function toggleMobileMenu() {
+            navMenu.classList.toggle('active');
+        }
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (navMenu.classList.contains('active') && 
+                !navMenu.contains(e.target) && 
+                !mobileMenuBtn.contains(e.target)) {
+                navMenu.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
